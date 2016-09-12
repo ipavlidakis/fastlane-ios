@@ -1,0 +1,62 @@
+desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
+lane :certs do |options|
+  scheme = options[:scheme]
+
+  if scheme == 'Testing'
+    match(type: 'development',readonly: true)
+  elsif scheme == 'Staging'
+    match(type: 'adhoc',readonly: true)
+  else
+    match(type: 'appstore',readonly: true)
+  end
+end
+
+desc "Builds the project"
+desc "- Scheme : the scheme to use"
+desc "- signingID : code signing identity"
+desc "- name : Project's and XCWorkspace filename without extensions"
+lane :build do |options|
+  scheme = options[:scheme]
+  # signingId = options[:signId]
+  name = options[:name]
+
+  gym(
+    scheme: "#{name} #{scheme}",
+    configuration: scheme,
+    clean: true,
+    include_bitcode: false,
+    workspace: "#{name}.xcworkspace",
+    output_directory: ENV['OUTPUT_DIRECTORY'],
+    output_name: "#{name}.ipa",
+    # codesigning_identity: "#{signingId}",
+    xcargs: "ARCHIVE=YES" # Used to tell the Fabric run script to upload dSYM file
+  )
+end
+
+desc "On success build upload sends a slack message"
+desc "- Scheme : the scheme to use"
+desc "- name : Project's and xcodeproj filename without extensions"
+desc "- destination : Deployment target"
+lane :post_to_slack do |options|
+  scheme      = options[:scheme]
+  name        = options[:name]
+  version     = get_version_number(xcodeproj: "#{name}.xcodeproj")
+  build       = get_build_number(xcodeproj: "#{name}.xcodeproj")
+  environment = scheme.upcase
+  # api         = File.read("../Fitbay/Constants/environment_constants.h").scan(/\d\.*/).join
+  destination = options[:destination]
+
+  slack(
+    message: "<!here|here>: New :ios: *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
+  )
+end
+
+lane :clean_and_finish do
+  File.delete('../' + ENV['OUTPUT_DIRECTORY'] + ENV['PROJECT_NAME'] + '.ipa')
+  File.delete('../' + ENV['OUTPUT_DIRECTORY'] + ENV['PROJECT_NAME'] + '.app.dSYM.zip')
+
+  build = Actions.lane_context[Actions::SharedValues::BUILD_NUMBER]
+  commit_version_bump(
+    message: "Build #{build}"
+  )
+end

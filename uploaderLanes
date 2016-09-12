@@ -1,0 +1,26 @@
+lane :fabric do |options|
+  scheme = options[:scheme]
+  name = options[:name]
+
+  crashlytics(
+    crashlytics_path: ENV['CRASHLYTICS_FRAMEWORK_PATH'],
+    api_token: ENV['CRASHLYTICS_API_TOKEN'],
+    build_secret: ENV['CRASHLYTICS_BUILD_SECRET'],
+    ipa_path: ENV['OUTPUT_DIRECTORY'] + "#{name}.ipa",
+    notes: "Running on #{scheme}",
+  )
+
+  post_to_slack(scheme: scheme, destination: "Crashlytics", name: name)
+end
+
+lane :itc do |options|
+  scheme = options[:scheme]
+  name = options[:name]
+
+  pilot(
+    ipa: "../#{name}.ipa",
+    skip_waiting_for_build_processing: true,
+  )
+
+  post_to_slack(scheme: scheme, destination: "TestFlight", name: name)
+end

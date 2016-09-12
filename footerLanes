@@ -1,0 +1,12 @@
+# This lane is called, only if the executed lane was successful
+after_all do |lane|
+  message = "Fastlane finished '#{lane}' successfully"
+  notification(message:message)
+  slack(message: message , success: true)
+end
+
+error do |lane, exception|
+  message = "Fastlane '#{lane}' errored" + exception.message
+  notification(message:message)
+  slack(message: message , success: false)
+end

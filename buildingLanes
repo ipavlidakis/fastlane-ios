@@ -1,0 +1,30 @@
+lane :prepare do |options|
+  scheme           = options[:scheme]
+  name             = options[:name]
+  testFlightUpload = options[:testflight]
+  fabricUpload     = options[:fabric]
+
+  certs(scheme: scheme)
+  build(scheme: scheme, name: name)
+  if testFlightUpload
+    itc(scheme: scheme, name: name)
+  end
+
+  if fabricUpload
+    fabric(scheme: scheme, name: name)
+  end
+  clean_and_finish
+end
+
+lane :testing do
+  prepare(scheme: 'Testing', name: ENV['PROJECT_NAME'], testflight: false, fabric:true)
+end
+
+lane :staging do
+  scheme = 'Staging'
+  prepare(scheme: 'Staging', name: ENV['PROJECT_NAME'], testflight: true, fabric:true)
+end
+
+lane :release do
+  prepare(scheme: 'Release', name: ENV['PROJECT_NAME'], testflight: true, fabric:true)
+end
