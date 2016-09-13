@@ -7,6 +7,7 @@ before_all do
   if (ENV['VERIFY_CLEAN_REPO'] == '1' || ENV['VERIFY_CLEAN_REPO'].downcase == 'true')
     ensure_git_status_clean
   end
+  setup_jenkins
   cocoapods
   increment_build_number
 end
