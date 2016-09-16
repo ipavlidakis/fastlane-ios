@@ -101,7 +101,7 @@ lane :post_to_slack do |options|
   destination = options[:destination]
 
   isSlackEnabled = ENV['SLACK_ENABLED']?:true
-  if :isSlackEnabled do
+  if isSlackEnabled
     slack(
       message: "<!here|here>: New :ios: *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
     )
@@ -155,7 +155,7 @@ after_all do |lane|
   notification(message:message)
 
   isSlackEnabled = ENV['SLACK_ENABLED']?:true
-  if :isSlackEnabled do
+  if isSlackEnabled
     slack(message: message , success: true)
   end
 end
@@ -165,7 +165,7 @@ error do |lane, exception|
   notification(message:message)
 
   isSlackEnabled = ENV['SLACK_ENABLED']?:true
-  if :isSlackEnabled do
+  if isSlackEnabled
     slack(message: message , success: false)
   end
 end
