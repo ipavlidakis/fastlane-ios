@@ -100,9 +100,12 @@ lane :post_to_slack do |options|
   # api         = File.read("../Fitbay/Constants/environment_constants.h").scan(/\d\.*/).join
   destination = options[:destination]
 
-  slack(
-    message: "<!here|here>: New :ios: *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
-  )
+  isSlackEnabled = ENV['SLACK_ENABLED']?:true
+  if isSlackEnabled do
+    slack(
+      message: "<!here|here>: New :ios: *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
+    )
+  end
 end
 
 lane :clean_and_finish do
@@ -150,11 +153,19 @@ end
 after_all do |lane|
   message = "Fastlane finished '#{lane}' successfully"
   notification(message:message)
-  slack(message: message , success: true)
+
+  isSlackEnabled = ENV['SLACK_ENABLED']?:true
+  if isSlackEnabled do
+    slack(message: message , success: true)
+  end
 end
 
 error do |lane, exception|
   message = "Fastlane '#{lane}' errored" + exception.message
   notification(message:message)
-  slack(message: message , success: false)
+
+  isSlackEnabled = ENV['SLACK_ENABLED']?:true
+  if isSlackEnabled do
+    slack(message: message , success: false)
+  end
 end
