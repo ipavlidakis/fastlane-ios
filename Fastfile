@@ -82,7 +82,8 @@ lane :build do |options|
     output_directory: ENV['OUTPUT_DIRECTORY'],
     output_name: "#{name}.ipa",
     # codesigning_identity: "#{signingId}",
-    xcargs: "ARCHIVE=YES" # Used to tell the Fabric run script to upload dSYM file
+    xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
+    use_legacy_build_api: ENV['LEGACY_BUILD_API'] ? ENV['LEGACY_BUILD_API'] : false
   )
 end
 
