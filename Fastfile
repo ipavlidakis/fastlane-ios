@@ -1,31 +1,41 @@
 default_platform :ios
 
-# ==== Header Lanes ==== #
-
 before_all do
-  # ENV["DELIVER_ITMSTRANSPORTER_ADDITIONAL_UPLOAD_PARAMETERS"] = "-t DAV"
   if (ENV['VERIFY_CLEAN_REPO'] == '1' || ENV['VERIFY_CLEAN_REPO'].downcase == 'true')
     ensure_git_status_clean
   end
+  
   setup_jenkins
+  system("sh ../bin/setup.sh")
   cocoapods
-  increment_build_number
+  
+  begin
+    increment_build_number
+  rescue => ex
+    puts("#{ex}")
+  end
 end
 
 before_each do |lane, options|
   puts "=> Lane working directory: " + Dir.pwd
 end
 
-# ==== Building Lanes ==== #
-
 lane :prepare do |options|
-  scheme           = options[:scheme]
-  name             = options[:name]
-  testFlightUpload = options[:testflight]
-  fabricUpload     = options[:fabric]
+  scheme            = options[:scheme]
+  name              = options[:name]
+  itcScheme         = if options[:itcScheme]; options[:itcScheme] else scheme end
+  testFlightUpload  = if options[:testflight]; options[:testflight] else false end
+  fabricUpload      = if options[:fabric]; options[:fabric] else false end 
+  configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  certs(scheme: scheme)
-  build(scheme: scheme, name: name)
+  certificates(scheme: scheme, itcScheme: itcScheme,)
+  
+  if (ENV['CUSTOM_DEVELOPER_DIR'])
+    ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
+  end
+  
+  build(scheme: scheme, name: name, configuration: configuration)
+  
   if testFlightUpload
     itc(scheme: scheme, name: name)
   end
@@ -33,64 +43,108 @@ lane :prepare do |options|
   if fabricUpload
     fabric(scheme: scheme, name: name)
   end
+
   clean_and_finish
+
 end
 
+# [TO BE OVERRIDEN - START]
+
 lane :testing do
-  prepare(scheme: 'Testing', name: ENV['PROJECT_NAME'], testflight: false, fabric:true)
+  prepare(scheme: 'Testing', name: ENV['PROJECT_NAME'], testflight: false, fabric:true, configuration: 'Testing')
 end
 
 lane :staging do
-  scheme = 'Staging'
-  prepare(scheme: 'Staging', name: ENV['PROJECT_NAME'], testflight: true, fabric:true)
+  prepare(scheme: 'Staging', name: ENV['PROJECT_NAME'], testflight: true, fabric:true, configuration: 'Staging')
 end
 
 lane :release do
-  prepare(scheme: 'Release', name: ENV['PROJECT_NAME'], testflight: true, fabric:true)
+  prepare(scheme: 'Distribution', name: ENV['PROJECT_NAME'], testflight: true, fabric:true, configuration: 'Distribution')
 end
 
-# ==== Utilities Lanes ==== #
+# [TO BE OVERRIDEN - END]
 
 desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
-lane :certs do |options|
-  scheme = options[:scheme]
+lane :certificates do |options|
+  scheme                        = options[:scheme]
+  itcScheme                     = if options[:itcScheme]; options[:itcScheme] else scheme end
+  skip_certificate_verification = if options[:skip_certificate_verification]; options[:skip_certificate_verification] else true 
 
-  if scheme == 'Testing'
-    match(type: 'development',readonly: true)
-  elsif scheme == 'Staging'
-    match(type: 'adhoc',readonly: true)
-  else
-    match(type: 'appstore',readonly: true)
+  puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme}")   
+  import_certificates(scheme: itcScheme)
+  sigh(skip_certificate_verification: skip_certificate_verification)
+end
+
+desc "Installs bundle certificates"
+lane :import_certificates do |options|
+  scheme    = options[:scheme]
+  name      = "#{ENV["KEYCHAIN_NAME"]}.keychain"
+  password  = ENV["KEYCHAIN_PASSWORD"]
+  path      = "#{ENV['CERTIFICATES_PATH']}/#{ENV["APP_IDENTIFIER"]}/#{scheme}"
+  keypath   = "#{path}/key.p12"
+  certpath  = "#{path}/certificate.cer"
+  
+  puts("Name #{name} and password #{password}")
+  puts("Listing available keychains")
+  sh("security list-keychains")
+  
+  begin
+    puts("1st try: Looking for #{name} keychain file")
+    unlock_keychain(path: "#{name}", password: "#{password}")
+  rescue => ex
+    begin
+      name = "#{name}-db"
+      puts("2nd try: Looking for #{name} keychain file"
+      unlock_keychain(path: "#{name}", password: "#{password}")
+    rescue => ex
+      puts("Keychain doesn't exitst. Let's create it. #{ex}")
+      name = "#{ENV["KEYCHAIN_NAME"]}.keychain"
+      create_keychain(name: "#{name}",default_keychain: true,unlock: true, timeout: 3600,lock_when_sleeps: true, password: "#{password}",)
+    end
+  end
+
+  begin
+    puts("Signing certificate file path: #{certpath}")
+    import_certificate(certificate_path: "#{certpath}",keychain_name: "#{name}",)
+  rescue => ex
+    puts("Exception in lane certificates:certificate #{ex}")
+  end
+ 
+  begin
+    puts("Private key file path: #{keypath}")
+    import_certificate(certificate_path: "#{keypath}",certificate_password: ENV["KEY_EXPORT_PASSWORD"],keychain_name: "#{name}",)
+  rescue => ex
+    puts("Exception in lane certificates:private_key #{ex}")
   end
 end
 
 desc "Builds the project"
-desc "- Scheme : the scheme to use"
-desc "- signingID : code signing identity"
-desc "- name : Project's and XCWorkspace filename without extensions"
 lane :build do |options|
-  scheme = options[:scheme]
   # signingId = options[:signId]
-  name = options[:name]
+  scheme              = options[:scheme]
+  name                = options[:name]
+  configuration       = options[:configuration]
+  clean               = if ENV['BUILD_CLEAN_PROJECT']; ENV['BUILD_CLEAN_PROJECT'] else true end
+  inlude_bitcode      = if ENV['BUILD_INCLUDE_BITCODE']; ENV['BUILD_INCLUDE_BITCODE'] else true end
+  workspace           = if ENV['BUILD_WORKSPACE']; ENV['BUILD_WORKSPACE'] else "#{name}.xcworkspace" end
+  output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
+  output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{name}.ipa" end
+  use_legacy_build_api= if ENV['BUILD_USE_LEGACY_API']; ENV['BUILD_USE_LEGACY_API'] else false end
 
   gym(
-    scheme: "#{name} #{scheme}",
-    configuration: scheme,
-    clean: true,
-    include_bitcode: false,
-    workspace: "#{name}.xcworkspace",
-    output_directory: ENV['OUTPUT_DIRECTORY'],
-    output_name: "#{name}.ipa",
-    # codesigning_identity: "#{signingId}",
+    scheme: scheme,
+    configuration: configuration,
+    clean: clean,
+    include_bitcode: falsinlude_bitcodee,
+    workspace: workspace,
+    output_directory: ,
+    output_name: output_name,
     xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
-    use_legacy_build_api: ENV['LEGACY_BUILD_API'] ? ENV['LEGACY_BUILD_API'] : false
+    use_legacy_build_api: use_legacy_build_api
   )
 end
 
 desc "On success build upload sends a slack message"
-desc "- Scheme : the scheme to use"
-desc "- name : Project's and xcodeproj filename without extensions"
-desc "- destination : Deployment target"
 lane :post_to_slack do |options|
   scheme      = options[:scheme]
   name        = options[:name]
@@ -106,55 +160,79 @@ lane :post_to_slack do |options|
 end
 
 lane :clean_and_finish do
-  File.delete('../' + ENV['OUTPUT_DIRECTORY'] + ENV['PROJECT_NAME'] + '.ipa')
-  File.delete('../' + ENV['OUTPUT_DIRECTORY'] + ENV['PROJECT_NAME'] + '.app.dSYM.zip')
+  project_name        = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
+  output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
+  output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
 
-  build = Actions.lane_context[Actions::SharedValues::BUILD_NUMBER]
-  commit_version_bump(
-    message: "Build #{build}"
-  )
+  output_file_name = "../#{output_dir}#{output_name}"
+  output_dsym_file_name = "../#{output_dir}#{project_name}.app.dSYM.zip"
+
+  begin
+    sh("pwd")
+    puts("Will try to delete:#{output_file_name}")
+    File.delete("#{output_file_name}")
+    puts("Will try to delete:#{output_dsym_file_name}")
+    File.delete("#{output_dsym_file_name}")
+
+    build = Actions.lane_context[Actions::SharedValues::BUILD_NUMBER]
+    puts("Will try to commit build[#{build}] number")
+    commit_version_bump(message: "Build #{build}")
+  rescue => ex
+    puts("Clean & Finish lane errored: #{ex}")
+  end
 end
 
-# ==== Uploader Lanes ==== #
-
 lane :fabric do |options|
-  scheme = options[:scheme]
-  name = options[:name]
+  scheme                    = options[:scheme]
+  crashlytics_path          = if ENV['CRASHLYTICS_FRAMEWORK_PATH']; ENV['CRASHLYTICS_FRAMEWORK_PATH'] else '' end
+  crashlytics_api_token     = if ENV['CRASHLYTICS_API_TOKEN']; ENV['CRASHLYTICS_API_TOKEN'] else '' end
+  crashlytics_build_secret  = if ENV['CRASHLYTICS_BUILD_SECRET']; ENV['CRASHLYTICS_BUILD_SECRET'] else '' end
+  project_name              = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
+  output_dir                = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
+  output_name               = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
+  output_file_name          = "../#{output_dir}#{output_name}"
 
   crashlytics(
-    crashlytics_path: ENV['CRASHLYTICS_FRAMEWORK_PATH'],
-    api_token: ENV['CRASHLYTICS_API_TOKEN'],
-    build_secret: ENV['CRASHLYTICS_BUILD_SECRET'],
-    ipa_path: ENV['OUTPUT_DIRECTORY'] + "#{name}.ipa",
-    notes: "Running on #{scheme}",
+    crashlytics_path: crashlytics_path,
+    api_token: crashlytics_api_token,
+    build_secret: crashlytics_build_secret,
+    ipa_path: output_file_name,
+    notes: "Built with scheme: #{scheme}. Upload file name: #{output_name1}",
   )
 
-  post_to_slack(scheme: scheme, destination: "Crashlytics", name: name)
+  post_to_slack(scheme: scheme, destination: "Crashlytics", name: project_name)
 end
 
 lane :itc do |options|
-  scheme = options[:scheme]
-  name = options[:name]
+  scheme                            = options[:scheme]
+  skip_waiting_for_build_processing = if ENV['ITC_SKIP_WAITING']; ENV['ITC_SKIP_WAITING'] else true end 
+  project_name                      = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
+  output_dir                        = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
+  output_name                       = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
+  output_file_name                  = "../#{output_dir}#{output_name}"
 
-  pilot(
-    ipa: "../#{name}.ipa",
-    skip_waiting_for_build_processing: true,
-  )
-
-  post_to_slack(scheme: scheme, destination: "TestFlight", name: name)
+  pilot(ipa: output_file_name, skip_waiting_for_build_processing: trskip_waiting_for_build_processingue)
+  post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
 end
 
-# ==== Footer Lanes ==== #
-
-# This lane is called, only if the executed lane was successful
 after_all do |lane|
   message = "Fastlane finished '#{lane}' successfully"
-  notification(message:message)
-  slack(message: message , success: true)
+
+  begin
+    notification(message:message)
+    slack(message: message , success: true)
+  rescue => ex
+    puts("After_all #{lane} errored: #{ex}")
+  end
 end
 
 error do |lane, exception|
-  message = "Fastlane '#{lane}' errored" + exception.message
-  notification(message:message)
-  slack(message: message , success: false)
+  message = "Fastlane #{lane} errored: #{ex}"
+
+  begin
+    notification(message:message)
+    slack(message: message , success: false)
+  rescue => ex
+    puts("Error #{lane} errored: #{ex}")
+  end
 end
