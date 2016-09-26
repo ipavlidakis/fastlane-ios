@@ -76,7 +76,7 @@ lane :update_property do |options|
   command << oldValue
   command << "/"
   command << value + ';'
-  command << "/g #{project_file}"
+  command << "/g' #{project_file}"
 
   puts("Will execute: #{command}")
   sh(command)
