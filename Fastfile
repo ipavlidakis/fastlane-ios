@@ -68,7 +68,7 @@ desc "Fetches the provisioning profiles so you can build locally and deploy to y
 lane :certificates do |options|
   scheme                        = options[:scheme]
   itcScheme                     = if options[:itcScheme]; options[:itcScheme] else scheme end
-  skip_certificate_verification = if options[:skip_certificate_verification]; options[:skip_certificate_verification] else true 
+  skip_certificate_verification = if options[:skip_certificate_verification]; options[:skip_certificate_verification] else true end
 
   puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme}")   
   import_certificates(scheme: itcScheme)
@@ -94,7 +94,7 @@ lane :import_certificates do |options|
   rescue => ex
     begin
       name = "#{name}-db"
-      puts("2nd try: Looking for #{name} keychain file"
+      puts("2nd try: Looking for #{name} keychain file")
       unlock_keychain(path: "#{name}", password: "#{password}")
     rescue => ex
       puts("Keychain doesn't exitst. Let's create it. #{ex}")
@@ -137,7 +137,7 @@ lane :build do |options|
     clean: clean,
     include_bitcode: falsinlude_bitcodee,
     workspace: workspace,
-    output_directory: ,
+    output_directory: output_dir,
     output_name: output_name,
     xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
     use_legacy_build_api: use_legacy_build_api
