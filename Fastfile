@@ -6,7 +6,7 @@ before_all do
   end
   
   setup_jenkins
-  cocoapods
+  # cocoapods
   
   begin
     increment_build_number
