@@ -6,9 +6,9 @@ before_all do
   end
   
   setup_jenkins
-  # cocoapods
   
   begin
+    cocoapods
     increment_build_number
   rescue => ex
     puts("#{ex}")
