@@ -68,6 +68,7 @@ lane :update_property do |options|
   key = options[:key] #PRODUCT_BUNDLE_IDENTIFIER
   value = options[:value]
 
+  puts(sh("pwd"))
   project_file = "#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
   oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
   oldValue = oldValue.strip!.tr(';','')
