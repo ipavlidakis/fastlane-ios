@@ -66,7 +66,7 @@ end
 
 lane :update_properties do |options|
   project_file = "#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
-  oldBundleId = "awk -F '=' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}' #{project_file}"
+  oldBundleId = sh("awk -F '=' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}' #{project_file}", log: true)
   command = "sed -i '' 's/"
   command << oldBundleId
   command << "/"
