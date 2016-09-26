@@ -64,7 +64,7 @@ end
 
 # [TO BE OVERRIDEN - END]
 
-lane :update_properties do |options|
+lane :update_property do |options|
   key = options[:key] #PRODUCT_BUNDLE_IDENTIFIER
   value = options[:value]
 
