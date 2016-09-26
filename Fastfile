@@ -65,16 +65,20 @@ end
 # [TO BE OVERRIDEN - END]
 
 lane :update_properties do |options|
+  key = options[:key] #PRODUCT_BUNDLE_IDENTIFIER
+  value = options[:value]
+
   project_file = "#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
-  oldBundleId = sh("awk -F '=' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}' #{project_file}", log: true)
+  oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}"
+  oldValue = oldValue.strip!.tr(';','')
   command = "sed -i '' 's/"
-  command << oldBundleId
+  command << oldValue
   command << "/"
-  command << ENV["APP_IDENTIFIER"]
+  command << value + ';'
   command << "/g #{project_file}"
 
   puts("Will execute: #{command}")
-  sh(command, log:true)
+  sh(command)
 end
 
 desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
