@@ -6,7 +6,6 @@ before_all do
   end
   
   setup_jenkins
-  system("sh ../bin/setup.sh")
   cocoapods
   
   begin
