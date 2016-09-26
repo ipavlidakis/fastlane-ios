@@ -74,7 +74,8 @@ lane :update_property do |options|
   command = "sed -i '' 's/"
   command << oldValue
   command << "/"
-  command << "#{value};\n"
+  command << "#{value};"
+  command << '\n'
   command << "/g' #{project_file}"
 
   puts("Will execute: #{command}")
