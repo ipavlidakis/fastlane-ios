@@ -69,10 +69,11 @@ lane :certificates do |options|
   scheme                        = options[:scheme]
   itcScheme                     = if options[:itcScheme]; options[:itcScheme] else scheme end
   skip_certificate_verification = if options[:skip_certificate_verification]; options[:skip_certificate_verification] else true end
+  team_id                       = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
   puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme}")   
   import_certificates(scheme: itcScheme)
-  sigh(skip_certificate_verification: skip_certificate_verification)
+  sigh(skip_certificate_verification: skip_certificate_verification, team_id: ENV['DEVELOPMENT_TEAM'])
 end
 
 desc "Installs bundle certificates"
@@ -96,8 +97,8 @@ lane :import_certificates do |options|
       name = "#{name}-db"
       puts("2nd try: Looking for #{name} keychain file")
       unlock_keychain(path: "#{name}", password: "#{password}")
-    rescue => ex
-      puts("Keychain doesn't exitst. Let's create it. #{ex}")
+    rescue => exception
+      puts("Keychain doesn't exitst. Let's create it. #{exception}")
       name = "#{ENV["KEYCHAIN_NAME"]}.keychain"
       create_keychain(name: "#{name}",default_keychain: true,unlock: true, timeout: 3600,lock_when_sleeps: true, password: "#{password}",)
     end
@@ -105,14 +106,14 @@ lane :import_certificates do |options|
 
   begin
     puts("Signing certificate file path: #{certpath}")
-    import_certificate(certificate_path: "#{certpath}",keychain_name: "#{name}",)
+    import_certificate(certificate_path: "#{certpath}",keychain_name: "#{name}")
   rescue => ex
     puts("Exception in lane certificates:certificate #{ex}")
   end
  
   begin
     puts("Private key file path: #{keypath}")
-    import_certificate(certificate_path: "#{keypath}",certificate_password: ENV["KEY_EXPORT_PASSWORD"],keychain_name: "#{name}",)
+    import_certificate(certificate_path: "#{keypath}",certificate_password: ENV["KEY_EXPORT_PASSWORD"],keychain_name: "#{name}")
   rescue => ex
     puts("Exception in lane certificates:private_key #{ex}")
   end
@@ -135,7 +136,7 @@ lane :build do |options|
     scheme: scheme,
     configuration: configuration,
     clean: clean,
-    include_bitcode: falsinlude_bitcodee,
+    include_bitcode: inlude_bitcode,
     workspace: workspace,
     output_directory: output_dir,
     output_name: output_name,
@@ -197,7 +198,7 @@ lane :fabric do |options|
     api_token: crashlytics_api_token,
     build_secret: crashlytics_build_secret,
     ipa_path: output_file_name,
-    notes: "Built with scheme: #{scheme}. Upload file name: #{output_name1}",
+    notes: "Built with scheme: #{scheme}. Upload file name: #{output_name}",
   )
 
   post_to_slack(scheme: scheme, destination: "Crashlytics", name: project_name)
@@ -220,18 +221,22 @@ after_all do |lane|
 
   begin
     notification(message:message)
-    slack(message: message , success: true)
+    if ENV['ENABLED_NOTIFICATIONS']
+      slack(message: message , success: true)
+    end
   rescue => ex
     puts("After_all #{lane} errored: #{ex}")
   end
 end
 
 error do |lane, exception|
-  message = "Fastlane #{lane} errored: #{ex}"
+  message = "Fastlane #{lane} errored: #{exception}"
 
   begin
     notification(message:message)
-    slack(message: message , success: false)
+    if ENV['ENABLED_NOTIFICATIONS']
+      slack(message: message , success: false)
+    end
   rescue => ex
     puts("Error #{lane} errored: #{ex}")
   end
