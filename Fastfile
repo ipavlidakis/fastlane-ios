@@ -9,7 +9,7 @@ before_all do
   
   begin
     cocoapods
-    increment_build_number
+    increase_build_number
   rescue => ex
     puts("#{ex}")
   end
@@ -17,6 +17,10 @@ end
 
 before_each do |lane, options|
   puts "=> Lane working directory: " + Dir.pwd
+end
+
+lane :increase_build_number do
+  increment_build_number
 end
 
 lane :prepare do |options|
