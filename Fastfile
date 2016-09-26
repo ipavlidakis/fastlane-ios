@@ -64,7 +64,7 @@ end
 
 # [TO BE OVERRIDEN - END]
 
-lane update_properties do |options|
+lane :update_properties do |options|
   project_file = "#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
   oldBundleId = "awk -F '=' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}' #{project_file}"
   command = "sed -i '' 's/"
