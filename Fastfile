@@ -90,7 +90,7 @@ lane :certificates do |options|
 
   puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme}")   
   import_certificates(scheme: itcScheme)
-  sigh(skip_certificate_verification: skip_certificate_verification, team_id: ENV['DEVELOPMENT_TEAM'])
+  sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
 end
 
 desc "Installs bundle certificates"
