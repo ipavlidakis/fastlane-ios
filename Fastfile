@@ -69,7 +69,7 @@ lane :update_properties do |options|
   value = options[:value]
 
   project_file = "#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
-  oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}"
+  oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
   oldValue = oldValue.strip!.tr(';','')
   command = "sed -i '' 's/"
   command << oldValue
