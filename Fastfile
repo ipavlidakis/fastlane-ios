@@ -89,8 +89,7 @@ lane :certificates do |options|
   skip_certificate_verification = if options[:skip_certificate_verification]; options[:skip_certificate_verification] else true end
   team_id                       = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
-  update_property(key:"DEVELOPMENT_TEAM", value: "team_id")
-  puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme}")   
+  puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme} and team_id: #{team_id}")   
   import_certificates(scheme: itcScheme)
   sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
 end
