@@ -27,7 +27,8 @@ lane :prepare do |options|
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  certificates(scheme: scheme, itcScheme: itcScheme,)
+  update_properties
+  certificates(scheme: scheme, itcScheme: itcScheme)
   
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
@@ -62,6 +63,19 @@ lane :release do
 end
 
 # [TO BE OVERRIDEN - END]
+
+lane update_properties do |options|
+  project_file = "#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
+  oldBundleId = "awk -F '=' '/PRODUCT_BUNDLE_IDENTIFIER/ {print $2; exit}' #{project_file}"
+  command = "sed -i '' 's/"
+  command << oldBundleId
+  command << "/"
+  command << ENV["APP_IDENTIFIER"]
+  command << "/g #{project_file}"
+
+  puts("Will execute: #{command}")
+  sh(command, log:true)
+end
 
 desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
 lane :certificates do |options|
