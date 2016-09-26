@@ -27,7 +27,6 @@ lane :prepare do |options|
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  update_properties
   certificates(scheme: scheme, itcScheme: itcScheme)
   
   if (ENV['CUSTOM_DEVELOPER_DIR'])
