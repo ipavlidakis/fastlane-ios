@@ -224,7 +224,9 @@ lane :fabric do |options|
     notes: "Built with scheme: #{scheme}. Upload file name: #{output_name}",
   )
 
-  post_to_slack(scheme: scheme, destination: "Crashlytics", name: project_name)
+  if ENV['ENABLED_NOTIFICATIONS']
+    post_to_slack(scheme: scheme, destination: "Crashlytics", name: project_name)
+  end
 end
 
 lane :itc do |options|
@@ -236,7 +238,9 @@ lane :itc do |options|
   output_file_name                  = "#{output_dir}#{output_name}"
 
   pilot(ipa: output_file_name, skip_waiting_for_build_processing: skip_waiting_for_build_processing)
-  post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
+  if ENV['ENABLED_NOTIFICATIONS']
+    post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
+  end
 end
 
 after_all do |lane|
