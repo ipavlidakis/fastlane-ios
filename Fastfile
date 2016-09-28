@@ -187,8 +187,8 @@ lane :clean_and_finish do
   output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
 
-  output_file_name = "../#{output_dir}#{output_name}"
-  output_dsym_file_name = "../#{output_dir}#{project_name}.app.dSYM.zip"
+  output_file_name = "#{output_dir}#{output_name}"
+  output_dsym_file_name = "#{output_dir}#{project_name}.app.dSYM.zip"
 
   begin
     sh("pwd")
@@ -213,7 +213,7 @@ lane :fabric do |options|
   project_name              = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
   output_dir                = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name               = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
-  output_file_name          = "../#{output_dir}#{output_name}"
+  output_file_name          = "#{output_dir}#{output_name}"
 
   crashlytics(
     crashlytics_path: crashlytics_path,
@@ -232,7 +232,7 @@ lane :itc do |options|
   project_name                      = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
   output_dir                        = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name                       = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
-  output_file_name                  = "../#{output_dir}#{output_name}"
+  output_file_name                  = "#{output_dir}#{output_name}"
 
   pilot(ipa: output_file_name, skip_waiting_for_build_processing: skip_waiting_for_build_processing)
   post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
