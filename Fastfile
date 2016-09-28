@@ -95,7 +95,8 @@ lane :certificates do |options|
 
   puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme} and team_id: #{team_id}")   
   import_certificates(scheme: itcScheme)
-  sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
+  ENV["PROJECT_UDID"] = sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
+  puts("Selected UUID: #{ENV["PROJECT_UDID"]}")
 end
 
 desc "Installs bundle certificates"
