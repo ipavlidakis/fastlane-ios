@@ -187,6 +187,7 @@ lane :clean_and_finish do
   output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
 
+  sh("cd ../")
   output_file_name = "#{output_dir}#{output_name}"
   output_dsym_file_name = "#{output_dir}#{project_name}.app.dSYM.zip"
 
