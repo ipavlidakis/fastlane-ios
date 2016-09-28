@@ -211,7 +211,7 @@ lane :fabric do |options|
   crashlytics_api_token     = if ENV['CRASHLYTICS_API_TOKEN']; ENV['CRASHLYTICS_API_TOKEN'] else '' end
   crashlytics_build_secret  = if ENV['CRASHLYTICS_BUILD_SECRET']; ENV['CRASHLYTICS_BUILD_SECRET'] else '' end
   project_name              = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
-  output_dir                = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
+  output_dir                = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name               = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
   output_file_name          = "../#{output_dir}#{output_name}"
 
@@ -234,7 +234,7 @@ lane :itc do |options|
   output_name                       = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
   output_file_name                  = "../#{output_dir}#{output_name}"
 
-  pilot(ipa: output_file_name, skip_waiting_for_build_processing: trskip_waiting_for_build_processingue)
+  pilot(ipa: output_file_name, skip_waiting_for_build_processing: skip_waiting_for_build_processing)
   post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
 end
 
