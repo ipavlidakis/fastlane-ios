@@ -230,7 +230,7 @@ lane :itc do |options|
   scheme                            = options[:scheme]
   skip_waiting_for_build_processing = if ENV['ITC_SKIP_WAITING']; ENV['ITC_SKIP_WAITING'] else true end 
   project_name                      = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
-  output_dir                        = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else './' end
+  output_dir                        = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name                       = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
   output_file_name                  = "../#{output_dir}#{output_name}"
 
