@@ -36,6 +36,7 @@ lane :prepare do |options|
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
   end
+  puts("XCode Path: #{ENV['DEVELOPER_DIR']}")
   
   build(scheme: scheme, name: name, configuration: configuration)
   
