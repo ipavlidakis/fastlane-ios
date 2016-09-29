@@ -74,7 +74,9 @@ lane :update_property do |options|
   puts(sh("pwd"))
   project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
   oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
-  oldValue = oldValue.strip!.tr(';','')
+  if oldValue != nil 
+    oldValue = oldValue.strip!.tr(';','')
+  end
   command = "sed -i '' 's/"
   command << oldValue
   command << "/"
