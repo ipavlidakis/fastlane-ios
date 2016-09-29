@@ -166,18 +166,35 @@ lane :build do |options|
   output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{name}.ipa" end
   use_legacy_build_api= if ENV['BUILD_USE_LEGACY_API']; ENV['BUILD_USE_LEGACY_API'] else false end
-
-  gym(
-    scheme: scheme,
-    configuration: configuration,
-    clean: clean,
-    include_bitcode: inlude_bitcode,
-    workspace: workspace,
-    output_directory: output_dir,
-    output_name: output_name,
-    xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
-    use_legacy_build_api: use_legacy_build_api
-  )
+  toolchain           = if ENV['BUILD_TOOLCHAIN']; ENV['BUILD_TOOLCHAIN'] else false end
+  
+  if toolchain
+    use_legacy_build_api = false
+    gym(
+        scheme: scheme,
+        configuration: configuration,
+        clean: clean,
+        include_bitcode: inlude_bitcode,
+        workspace: workspace,
+        output_directory: output_dir,
+        output_name: output_name,
+        xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
+        use_legacy_build_api: use_legacy_build_api,
+        toolchain: toolchain
+      )
+  else
+    gym(
+      scheme: scheme,
+      configuration: configuration,
+      clean: clean,
+      include_bitcode: inlude_bitcode,
+      workspace: workspace,
+      output_directory: output_dir,
+      output_name: output_name,
+      xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
+      use_legacy_build_api: use_legacy_build_api
+    )
+  end
 end
 
 desc "On success build upload sends a slack message"
