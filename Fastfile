@@ -74,9 +74,13 @@ lane :update_property do |options|
   puts(sh("pwd"))
   project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
   oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
-  if oldValue != nil 
+  
+  begin
     oldValue = oldValue.strip!.tr(';','')
+  rescue Exception
+    oldValue = ''
   end
+  
   command = "sed -i '' 's/"
   command << oldValue
   command << "/"
@@ -86,6 +90,12 @@ lane :update_property do |options|
 
   puts("Will execute: #{command}")
   sh(command)
+end
+
+lane :update_team do |options|
+  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+  update_property(key:"DevelopmentTeam", value: team_id)
+  update_property(key:"DEVELOPMENT_TEAM", value: team_id)
 end
 
 desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
