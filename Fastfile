@@ -170,7 +170,7 @@ lane :build do |options|
   toolchain           = if ENV['BUILD_TOOLCHAIN']; ENV['BUILD_TOOLCHAIN'] else false end
   
   if toolchain
-    use_legacy_build_api = false
+    # use_legacy_build_api = false
     gym(
         scheme: scheme,
         configuration: configuration,
