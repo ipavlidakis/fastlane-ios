@@ -48,6 +48,7 @@ lane :prepare do |options|
 
   update_bundle_id
   update_team
+  use_distribution_provisioning_profile
 
   certificates(scheme: scheme, itcScheme: itcScheme)
   
@@ -144,7 +145,6 @@ lane :certificates do |options|
   import_certificates(scheme: itcScheme)
   ENV["PROFILE_UUID"] = sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
   puts("Selected UUID: #{ENV["PROFILE_UUID"]}")
-  use_sigh_provisioning_profile
 end
 
 desc "Installs bundle certificates"
