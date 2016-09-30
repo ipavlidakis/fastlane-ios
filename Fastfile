@@ -96,9 +96,24 @@ lane :update_property do |options|
 end
 
 lane :update_team do |options|
+  project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-  update_property(key:"DevelopmentTeam", value: team_id)
-  update_property(key:"DEVELOPMENT_TEAM", value: team_id)
+  update_project_team(
+    path: project_file,
+    teamid: team_id
+  )
+end
+
+lane :update_bundle_id do |options|
+  project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj"
+  plist_file = "../#{ENV['PROJECT_NAME']}/Info.plist"
+  bundle_id = ENV["APP_IDENTIFIER"]
+
+  update_app_identifier(
+    xcodeproj: project_file, # Optional path to xcodeproj, will use the first .xcodeproj if not set
+    plist_path: plist_file, # Path to info plist file, relative to xcodeproj
+    app_identifier: bundle_id
+  )
 end
 
 desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
