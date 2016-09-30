@@ -116,6 +116,9 @@ end
 lane :update_team do |options|
   project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+
+  puts("Will update team_id: #{team_id}")
+
   update_project_team(
     path: project_file,
     teamid: team_id
@@ -126,6 +129,8 @@ lane :update_bundle_id do |options|
   project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
   plist_file = "#{ENV['PROJECT_NAME']}/Info.plist"
   bundle_id = ENV["APP_IDENTIFIER"]
+
+  puts("Will update bundle_id: #{bundle_id}")
 
   update_app_identifier(
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
