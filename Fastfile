@@ -122,7 +122,7 @@ end
 
 lane :update_bundle_id do |options|
   project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj"
-  plist_file = "../#{ENV['PROJECT_NAME']}/Info.plist"
+  plist_file = "#{ENV['PROJECT_NAME']}/Info.plist"
   bundle_id = ENV["APP_IDENTIFIER"]
 
   update_app_identifier(
