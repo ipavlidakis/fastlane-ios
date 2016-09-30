@@ -165,9 +165,11 @@ lane :build do |options|
   inlude_bitcode      = if ENV['BUILD_INCLUDE_BITCODE']; ENV['BUILD_INCLUDE_BITCODE'] else true end
   workspace           = if ENV['BUILD_WORKSPACE']; ENV['BUILD_WORKSPACE'] else "#{name}.xcworkspace" end
   output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
+  output_dir          = "#{output_dir}#{name}/#{scheme}/"
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{name}.ipa" end
   use_legacy_build_api= if ENV['BUILD_USE_LEGACY_API']; ENV['BUILD_USE_LEGACY_API'] else false end
   toolchain           = if ENV['BUILD_TOOLCHAIN']; ENV['BUILD_TOOLCHAIN'] else false end
+  ENV["FINAL_OUTPUT_BUILD_DIRECTORY"] = output_dir
   
   if toolchain
     # use_legacy_build_api = false
@@ -214,7 +216,7 @@ end
 
 lane :clean_and_finish do
   project_name        = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
-  output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
+  output_dir          = ENV["FINAL_OUTPUT_BUILD_DIRECTORY"]
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
 
   sh("cd ..")
@@ -242,7 +244,7 @@ lane :fabric do |options|
   crashlytics_api_token     = if ENV['CRASHLYTICS_API_TOKEN']; ENV['CRASHLYTICS_API_TOKEN'] else '' end
   crashlytics_build_secret  = if ENV['CRASHLYTICS_BUILD_SECRET']; ENV['CRASHLYTICS_BUILD_SECRET'] else '' end
   project_name              = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
-  output_dir                = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
+  output_dir                = ENV["FINAL_OUTPUT_BUILD_DIRECTORY"]
   output_name               = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
   output_file_name          = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}" end
 
@@ -264,7 +266,7 @@ lane :itc do |options|
   scheme                            = options[:scheme]
   skip_waiting_for_build_processing = if ENV['ITC_SKIP_WAITING']; ENV['ITC_SKIP_WAITING'] else true end 
   project_name                      = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
-  output_dir                        = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
+  output_dir                        = ENV["FINAL_OUTPUT_BUILD_DIRECTORY"]
   output_name                       = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
   output_file_name                  = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}" end
 
