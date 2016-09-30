@@ -92,7 +92,7 @@ lane :update_property do |options|
 
   puts(sh("pwd"))
   project_file = File.expand_path(File.join('.', params[:xcodeproj])) : nil
-  # project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
+  project_file =  Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
   oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
   
   begin
