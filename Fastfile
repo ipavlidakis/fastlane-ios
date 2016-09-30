@@ -91,7 +91,8 @@ lane :update_property do |options|
   value = options[:value]
 
   puts(sh("pwd"))
-  project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
+  project_file = File.expand_path(File.join('.', params[:xcodeproj])) : nil
+  # project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
   oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
   
   begin
@@ -126,7 +127,6 @@ lane :update_bundle_id do |options|
   bundle_id = ENV["APP_IDENTIFIER"]
 
   update_app_identifier(
-    # xcodeproj: project_file, # Optional path to xcodeproj, will use the first .xcodeproj if not set
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
     app_identifier: bundle_id
   )
