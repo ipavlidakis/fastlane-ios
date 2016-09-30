@@ -171,6 +171,12 @@ lane :build do |options|
   toolchain           = if ENV['BUILD_TOOLCHAIN']; ENV['BUILD_TOOLCHAIN'] else false end
   ENV["FINAL_OUTPUT_BUILD_DIRECTORY"] = output_dir
   
+  begin
+    sh("rm -Rf #{output_dir}")  
+  rescue Exception
+    puts("Exception occured but nothing to worry about");
+  end
+
   if toolchain
     # use_legacy_build_api = false
     gym(
