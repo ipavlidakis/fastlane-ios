@@ -20,7 +20,9 @@ before_each do |lane, options|
 end
 
 lane :increase_build_number do
-  increment_build_number
+  increment_build_number({
+    build_number: latest_testflight_build_number + 1
+  })
 end
 
 lane :prepare do |options|
