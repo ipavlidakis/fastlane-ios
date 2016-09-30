@@ -244,8 +244,9 @@ lane :fabric do |options|
   project_name              = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
   output_dir                = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name               = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
-  output_file_name          = "#{output_dir}#{output_name}"
+  output_file_name          = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}"
 
+  puts("Crashlytics IPA path: #{output_file_name}")
   crashlytics(
     crashlytics_path: crashlytics_path,
     api_token: crashlytics_api_token,
