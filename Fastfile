@@ -112,7 +112,7 @@ lane :update_property do |options|
 end
 
 lane :update_team do |options|
-  project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = "#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
   update_project_team(
     path: project_file,
