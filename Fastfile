@@ -126,7 +126,7 @@ lane :update_bundle_id do |options|
   bundle_id = ENV["APP_IDENTIFIER"]
 
   update_app_identifier(
-    xcodeproj: project_file, # Optional path to xcodeproj, will use the first .xcodeproj if not set
+    # xcodeproj: project_file, # Optional path to xcodeproj, will use the first .xcodeproj if not set
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
     app_identifier: bundle_id
   )
