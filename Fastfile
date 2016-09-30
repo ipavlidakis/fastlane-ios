@@ -25,6 +25,18 @@ lane :increase_build_number do
   })
 end
 
+lane :use_distribution_provisioning_profile do
+  update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Distribution")
+end
+
+lane :use_development_provisioning_profile do
+  update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Development")
+end
+
+lane :update_provisioning_profile do
+  use_distribution_provisioning_profile
+end
+
 lane :prepare do |options|
   scheme            = options[:scheme]
   name              = options[:name]
@@ -32,6 +44,10 @@ lane :prepare do |options|
   testFlightUpload  = if options[:testflight]; options[:testflight] else false end
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
+
+  update_bundle_id
+  update_team
+  update_provisioning_profile
 
   certificates(scheme: scheme, itcScheme: itcScheme)
   
