@@ -8,7 +8,6 @@ before_all do
   setup_jenkins
   
   begin
-    update_fastlane
     cocoapods
     increase_build_number
   rescue => ex
