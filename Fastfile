@@ -266,8 +266,9 @@ lane :itc do |options|
   project_name                      = if ENV['PROJECT_NAME']; ENV['PROJECT_NAME'] else "" end
   output_dir                        = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_name                       = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{project_name}.ipa" end
-  output_file_name                  = "#{output_dir}#{output_name}"
+  output_file_name                  = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}"
 
+  puts("TestFlight IPA path: #{output_file_name}")
   pilot(ipa: output_file_name, skip_waiting_for_build_processing: skip_waiting_for_build_processing)
   if ENV['ENABLED_NOTIFICATIONS']
     post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
