@@ -91,10 +91,12 @@ lane :update_property do |options|
   value = options[:value]
 
   puts(sh("pwd"))
-  project_file =  Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj/project.pbxproj"
-  oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
+  oldValue = ''
   
   begin
+    project_file =  Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
+    project_file = "#{project_file}/project.pbxproj"
+    oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
     oldValue = oldValue.strip!.tr(';','')
   rescue Exception
     oldValue = ''
