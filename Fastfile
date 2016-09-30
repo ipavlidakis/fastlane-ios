@@ -33,8 +33,12 @@ lane :use_development_provisioning_profile do
   update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Development")
 end
 
+lane :use_sigh_provisioning_profile do
+  update_property(key:"CODE_SIGN_IDENTITY", value: ENV["SIGH_CERTIFICATE_ID"])
+end
+
 lane :update_provisioning_profile do
-  use_distribution_provisioning_profile
+  use_sigh_provisioning_profile
 end
 
 lane :prepare do |options|
@@ -114,7 +118,7 @@ lane :update_property do |options|
 end
 
 lane :update_team do |options|
-  project_file = "#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
   update_project_team(
     path: project_file,
@@ -123,7 +127,7 @@ lane :update_team do |options|
 end
 
 lane :update_bundle_id do |options|
-  project_file = "../#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
   plist_file = "#{ENV['PROJECT_NAME']}/Info.plist"
   bundle_id = ENV["APP_IDENTIFIER"]
 
@@ -144,6 +148,7 @@ lane :certificates do |options|
   import_certificates(scheme: itcScheme)
   ENV["PROFILE_UUID"] = sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
   puts("Selected UUID: #{ENV["PROFILE_UUID"]}")
+  use_sigh_provisioning_profile
 end
 
 desc "Installs bundle certificates"
