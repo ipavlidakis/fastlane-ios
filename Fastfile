@@ -138,7 +138,7 @@ lane :import_certificates do |options|
     rescue => exception
       puts("Keychain doesn't exitst. Let's create it. #{exception}")
       name = "#{ENV["KEYCHAIN_NAME"]}.keychain"
-      create_keychain(name: "#{name}",default_keychain: true,unlock: true, timeout: 3600,lock_when_sleeps: true, password: "#{password}",)
+      create_keychain(name: "#{name}",default_keychain: false, unlock: true, timeout: 3600,lock_when_sleeps: true, password: "#{password}",)
     end
   end
 
