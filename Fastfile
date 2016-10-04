@@ -94,7 +94,7 @@ lane :update_property do |options|
   oldValue = ''
   
   begin
-    project_file =  Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
+    project_file =  Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
     project_file = "#{project_file}/project.pbxproj"
     oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
     oldValue = oldValue.strip!.tr(';','')
@@ -114,10 +114,10 @@ lane :update_property do |options|
 end
 
 lane :update_team do |options|
-  project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
-  puts("Will update team_id: #{team_id}")
+  puts("Will update team_id: #{team_id} and path: #{project_file}")
 
   update_project_team(
     path: project_file,
@@ -126,7 +126,7 @@ lane :update_team do |options|
 end
 
 lane :update_bundle_id do |options|
-  project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = Dir["*.xcodeproj"].first || "ß#{ENV['PROJECT_NAME']}.xcodeproj"
   plist_file = "#{ENV['PROJECT_NAME']}/Info.plist"
   bundle_id = ENV["APP_IDENTIFIER"]
 
