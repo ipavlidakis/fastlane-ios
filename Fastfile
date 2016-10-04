@@ -37,6 +37,10 @@ lane :use_sigh_provisioning_profile do
   update_property(key:"CODE_SIGN_IDENTITY", value: ENV["SIGH_CERTIFICATE_ID"])
 end
 
+lane :update_provisioning_name do
+  update_property(key:"PROVISIONING_PROFILE_SPECIFIER" value:ENV["SIGH_CERTIFICATE_ID"]||ENV["APP_IDENTIFIER"])
+end
+
 lane :prepare do |options|
   scheme            = options[:scheme]
   name              = options[:name]
@@ -48,6 +52,7 @@ lane :prepare do |options|
   update_bundle_id
   update_team
   use_distribution_provisioning_profile
+  update_provisioning_name
 
   certificates(scheme: scheme, itcScheme: itcScheme)
   
