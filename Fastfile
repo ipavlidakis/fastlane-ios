@@ -38,7 +38,7 @@ lane :use_sigh_provisioning_profile do
 end
 
 lane :update_provisioning_name do
-  update_property(key:"PROVISIONING_PROFILE_SPECIFIER" value:ENV["SIGH_CERTIFICATE_ID"]||ENV["APP_IDENTIFIER"])
+  update_property(key:"PROVISIONING_PROFILE_SPECIFIER" value: ENV["PROVISIONING_NAME"]||ENV["APP_IDENTIFIER"])
 end
 
 lane :prepare do |options|
