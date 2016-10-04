@@ -39,7 +39,7 @@ end
 
 lane :update_provisioning_name do
   value = ENV["PROVISIONING_NAME"] || ENV["APP_IDENTIFIER"]
-  update_property(key:"PROVISIONING_PROFILE_SPECIFIER" value: value)
+  update_property(key:"PROVISIONING_PROFILE_SPECIFIER", value: value)
 end
 
 lane :prepare do |options|
