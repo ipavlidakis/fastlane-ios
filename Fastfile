@@ -107,7 +107,8 @@ lane :update_property do |options|
     project_file = "#{project_file}/project.pbxproj"
     oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
     oldValue = oldValue.strip!.tr(';','')
-  rescue Exception
+  rescue => ex
+    puts("Exception: #{ex}")
     oldValue = ''
   end
   
