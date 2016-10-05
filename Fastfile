@@ -56,7 +56,7 @@ lane :prepare do |options|
   update_bundle_id
   update_team
   use_distribution_provisioning_profile
-  update_provisioning_name
+  # update_provisioning_name
 
   certificates(scheme: scheme, itcScheme: itcScheme)
   
@@ -150,6 +150,9 @@ lane :update_bundle_id do |options|
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
     app_identifier: bundle_id
   )
+
+  update_property(key:"PRODUCT_BUNDLE_IDENTIFIER", value: bundle_id)
+  
 end
 
 desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
