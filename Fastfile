@@ -27,14 +27,17 @@ end
 
 lane :use_distribution_provisioning_profile do
   update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Distribution")
+  update_property(key:"CODE_SIGN_IDENTITY[sdk=iphoneos*]", value: "iPhone Distribution")
 end
 
 lane :use_development_provisioning_profile do
   update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Development")
+  update_property(key:"CODE_SIGN_IDENTITY[sdk=iphoneos*]", value: "iPhone Development")
 end
 
 lane :use_sigh_provisioning_profile do
   update_property(key:"CODE_SIGN_IDENTITY", value: ENV["SIGH_CERTIFICATE_ID"])
+  update_property(key:"CODE_SIGN_IDENTITY[sdk=iphoneos*]", value: ENV["SIGH_CERTIFICATE_ID"])
 end
 
 lane :update_provisioning_name do
@@ -108,15 +111,19 @@ lane :update_property do |options|
     oldValue = ''
   end
   
-  command = "sed -i '' 's/"
-  command << oldValue
-  command << "/"
-  command << "\"#{value}\";"
-  command << '\n'
-  command << "/g' #{project_file}"
+  if (oldValue != '') 
+    command = "sed -i '' 's/"
+    command << oldValue
+    command << "/"
+    command << "\"#{value}\";"
+    command << '\n'
+    command << "/g' #{project_file}"
 
-  puts("Will execute: #{command}")
-  sh(command)
+    puts("Will execute: #{command}")
+    sh(command)
+  else
+    puts("Will not execute: #{command}")
+  end
 end
 
 lane :update_team do |options|
