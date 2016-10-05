@@ -137,6 +137,7 @@ lane :update_team do |options|
     teamid: team_id
   )
   update_property(key:"DEVELOPMENT_TEAM", value: team_id)
+  update_property(key:"DevelopmentTeam", value: team_id)
 end
 
 lane :update_bundle_id do |options|
