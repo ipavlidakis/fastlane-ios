@@ -51,7 +51,9 @@ lane :match_signing do |options|
   
   puts("Will run match now for configuration: #{configuration}")
   match
+  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
   update_project_team(
+    paht: project_file,
     teamid: ENV[ENV["MATCH_TEAM_VARIABLE"]]
   )
 end
