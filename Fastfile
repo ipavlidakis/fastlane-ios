@@ -56,6 +56,8 @@ lane :match_signing do |options|
     path: project_file,
     teamid: ENV[ENV["MATCH_TEAM_VARIABLE"]]
   )
+   p = File.read(project_file)
+   File.write(path, p.gsub(/DEVELOPMENT_TEAM = .*;/, "DEVELOPMENT_TEAM = #{params[:teamid]};"))
 end
 
 lane :prepare do |options|
