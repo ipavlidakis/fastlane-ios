@@ -48,14 +48,22 @@ end
 lane :match_signing do |options|
   configuration = options[:configuration]
   ENV['MATCH_TYPE'] = configuration
-  ENV["PROFILE_UUID"] = "sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}_team-id"
   
   puts("Will run match now for configuration: #{configuration} and PROFILE_UUID: #{ENV["PROFILE_UUID"]}")
   match
+
+  ENV["PROFILE_UUID_NAME"]  = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}_profile-name"]
+  ENV["PROFILE_UUID"]       = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}"]
+  ENV["MATCH_TEAM_ID"]      = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}_team-id"]
+
+  puts("PROFILE_UUID_NAME: #{ENV["PROFILE_UUID_NAME"]}")
+  puts("PROFILE_UUID: #{ENV["PROFILE_UUID"]}")
+  puts("MATCH_TEAM_ID: #{ENV["MATCH_TEAM_ID"]}")
+
   project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
   update_team_xcode_8(
     path: project_file,
-    teamid: ENV[ENV["PROFILE_UUID"]]
+    teamid: ENV["MATCH_TEAM_ID"]
   )
   
 end
