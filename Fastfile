@@ -26,13 +26,11 @@ lane :increase_build_number do
 end
 
 lane :use_distribution_provisioning_profile do
-  update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Distribution")
-  update_property(key:"CODE_SIGN_IDENTITY[sdk=iphoneos*]", value: "iPhone Distribution")
+  update_provision_type(type: "iPhone Distribution")
 end
 
 lane :use_development_provisioning_profile do
-  update_property(key:"CODE_SIGN_IDENTITY", value: "iPhone Development")
-  update_property(key:"CODE_SIGN_IDENTITY[sdk=iphoneos*]", value: "iPhone Development")
+  update_provision_type
 end
 
 lane :use_sigh_provisioning_profile do
