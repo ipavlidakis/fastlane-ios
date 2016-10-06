@@ -59,7 +59,7 @@ lane :match_signing do |options|
   
    project_file = File.join(path, "project.pbxproj")
    p = File.read(project_file)
-   File.write(path, p.gsub(/DEVELOPMENT_TEAM = .*;/, "DEVELOPMENT_TEAM = #{params[:teamid]};"))
+   File.write(project_file, p.gsub(/DEVELOPMENT_TEAM = .*;/, "DEVELOPMENT_TEAM = #{params[:teamid]};"))
 end
 
 lane :prepare do |options|
