@@ -45,18 +45,30 @@ lane :update_provisioning_name do
   update_property(key:"PROVISIONING_PROFILE_SPECIFIER", value: value)
 end
 
+lane :match_signing do |options|
+  configuration = options[:configuration]
+  ENV['MATCH_TYPE'] = configuration
+  
+  puts("Will run match now for configuration: #{configuration}")
+  result = match
+  puts("Match returned: #{result}")
+)
+end
+
 lane :prepare do |options|
   scheme            = options[:scheme]
   name              = options[:name]
+  match             = options[:match]
   itcScheme         = if options[:itcScheme]; options[:itcScheme] else scheme end
   testFlightUpload  = if options[:testflight]; options[:testflight] else false end
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  update_bundle_id
-  update_team
-  use_distribution_provisioning_profile
+  # update_bundle_id
+  # update_team
+  # use_distribution_provisioning_profile
   # update_provisioning_name
+  match_signing(configuration: match)
 
   certificates(scheme: scheme, itcScheme: itcScheme)
   
@@ -82,15 +94,15 @@ end
 # [TO BE OVERRIDEN - START]
 
 lane :testing do
-  prepare(scheme: 'Testing', name: ENV['PROJECT_NAME'], testflight: false, fabric:true, configuration: 'Testing')
+  prepare(scheme: 'Testing', name: ENV['PROJECT_NAME'], testflight: false, fabric:true, configuration: 'Testing', match: 'development')
 end
 
 lane :staging do
-  prepare(scheme: 'Staging', name: ENV['PROJECT_NAME'], testflight: true, fabric:true, configuration: 'Staging')
+  prepare(scheme: 'Staging', name: ENV['PROJECT_NAME'], testflight: true, fabric:true, configuration: 'Staging', match: 'appstore')
 end
 
 lane :release do
-  prepare(scheme: 'Distribution', name: ENV['PROJECT_NAME'], testflight: true, fabric:true, configuration: 'Distribution')
+  prepare(scheme: 'Distribution', name: ENV['PROJECT_NAME'], testflight: true, fabric:true, configuration: 'Distribution', match: 'appstore')
 end
 
 # [TO BE OVERRIDEN - END]
