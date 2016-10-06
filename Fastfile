@@ -52,7 +52,6 @@ lane :match_signing do |options|
   puts("Will run match now for configuration: #{configuration}")
   result = match
   puts("Match returned: #{result}")
-)
 end
 
 lane :prepare do |options|
