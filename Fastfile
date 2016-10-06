@@ -26,11 +26,13 @@ lane :increase_build_number do
 end
 
 lane :use_distribution_provisioning_profile do
-  update_provision_type(type: "iPhone Distribution")
+  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
+  update_provision_type(path: project_file, type: "iPhone Distribution")
 end
 
 lane :use_development_provisioning_profile do
-  update_provision_type
+  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
+  update_provision_type(path: project_file)
 end
 
 lane :use_sigh_provisioning_profile do
