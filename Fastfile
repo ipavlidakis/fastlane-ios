@@ -50,8 +50,10 @@ lane :match_signing do |options|
   ENV['MATCH_TYPE'] = configuration
   
   puts("Will run match now for configuration: #{configuration}")
-  result = match
-  puts("Match returned: #{result}")
+  match
+  update_project_team(
+    teamid: ENV[ENV["MATCH_TEAM_VARIABLE"]]
+  )
 end
 
 lane :prepare do |options|
@@ -67,9 +69,9 @@ lane :prepare do |options|
   # update_team
   # use_distribution_provisioning_profile
   # update_provisioning_name
-  match_signing(configuration: match)
+  # certificates(scheme: scheme, itcScheme: itcScheme)
 
-  certificates(scheme: scheme, itcScheme: itcScheme)
+  match_signing(configuration: match)
   
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
