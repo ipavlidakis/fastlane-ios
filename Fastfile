@@ -57,7 +57,7 @@ lane :match_signing do |options|
     teamid: ENV[ENV["MATCH_TEAM_VARIABLE"]]
   )
   
-   project_file = File.join(path, "project.pbxproj")
+   project_file = File.join(project_file, "project.pbxproj")
    p = File.read(project_file)
    File.write(project_file, p.gsub(/DEVELOPMENT_TEAM = .*;/, "DEVELOPMENT_TEAM = #{params[:teamid]};"))
 end
