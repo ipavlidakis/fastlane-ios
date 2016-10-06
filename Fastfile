@@ -52,14 +52,10 @@ lane :match_signing do |options|
   puts("Will run match now for configuration: #{configuration}")
   match
   project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
-  update_project_team(
+  update_team_xcode_8(
     path: project_file,
     teamid: ENV[ENV["MATCH_TEAM_VARIABLE"]]
   )
-  
-   project_file = File.join(project_file, "project.pbxproj")
-   p = File.read(project_file)
-   File.write(project_file, p.gsub(/DEVELOPMENT_TEAM = .*;/, "DEVELOPMENT_TEAM = #{params[:teamid]};"))
 end
 
 lane :prepare do |options|
