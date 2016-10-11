@@ -6,6 +6,7 @@ before_all do
   end
   
   setup_jenkins
+  puts("#### CURRENT WORKSPACE: #{ENV["WORKSPACE"]} ####")
   
   begin
     cocoapods
