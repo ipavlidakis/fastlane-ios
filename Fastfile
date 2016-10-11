@@ -285,6 +285,8 @@ lane :build do |options|
       use_legacy_build_api: use_legacy_build_api
     )
   end
+
+  copy_artifacts_to_jenkins_workspace
 end
 
 desc "On success build upload sends a slack message"
@@ -305,7 +307,13 @@ lane :copy_artifacts_to_jenkins_workspace do
   source_dir = ENV["FINAL_OUTPUT_BUILD_DIRECTORY"]
   destination_dir = ENV['WORKSPACE']
 
-  sh("cp #{source_dir}* \"#{destination_dir}\"/"))
+  if destination_dir
+    begin
+      sh("cp #{source_dir}* \"#{destination_dir}\"/"))
+    rescue => ex
+      puts("copy_artifacts_to_jenkins_workspace lane errored: #{ex}")
+    end
+  end
 end
 
 lane :clean_and_finish do
