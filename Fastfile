@@ -6,7 +6,6 @@ before_all do
   end
   
   setup_jenkins
-  puts("#### CURRENT WORKSPACE: #{ENV["WORKSPACE"]} ####")
   
   begin
     cocoapods
@@ -300,6 +299,13 @@ lane :post_to_slack do |options|
   slack(
     message: "<!here|here>: New :ios: *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
   )
+end
+
+lane :copy_artifacts_to_jenkins_workspace do
+  source_dir = ENV["FINAL_OUTPUT_BUILD_DIRECTORY"]
+  destination_dir = ENV['WORKSPACE']
+
+  sh("cp #{source_dir}* \"#{destination_dir}\"/"))
 end
 
 lane :clean_and_finish do
