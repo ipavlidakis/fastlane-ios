@@ -50,7 +50,7 @@ lane :match_signing do |options|
   ENV['MATCH_TYPE'] = configuration
   
   puts("Will run match now for configuration: #{configuration} and PROFILE_UUID: #{ENV["PROFILE_UUID"]}")
-  match
+  match(app_identifier: ENV["APP_IDENTIFIER"])
 
   ENV["PROFILE_UUID_NAME"]  = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}_profile-name"]
   ENV["PROFILE_UUID"]       = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}"]
