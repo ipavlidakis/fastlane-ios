@@ -86,7 +86,8 @@ lane :prepare do |options|
   # update_provisioning_name
   # certificates(scheme: scheme, itcScheme: itcScheme)
 
-  match_signing(configuration: match)
+  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+  match_signing(configuration: match, team_id: team_id)
   
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
