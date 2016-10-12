@@ -77,7 +77,7 @@ lane :prepare do |options|
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  # update_bundle_id
+  update_bundle_id
   # update_team
   # use_distribution_provisioning_profile
   # update_provisioning_name
