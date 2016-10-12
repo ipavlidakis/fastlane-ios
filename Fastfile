@@ -250,6 +250,7 @@ lane :build do |options|
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{name}.ipa" end
   use_legacy_build_api= if ENV['BUILD_USE_LEGACY_API']; ENV['BUILD_USE_LEGACY_API'] else false end
   toolchain           = if ENV['BUILD_TOOLCHAIN']; ENV['BUILD_TOOLCHAIN'] else false end
+  disable_xcpretty    = if ENV['BUILD_DISABLE_XCPRETTY']; ENV['BUILD_DISABLE_XCPRETTY'] else false end
   ENV["FINAL_OUTPUT_BUILD_DIRECTORY"] = output_dir
   
   begin
@@ -270,7 +271,8 @@ lane :build do |options|
         output_name: output_name,
         xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
         use_legacy_build_api: use_legacy_build_api,
-        toolchain: toolchain
+        toolchain: toolchain,
+        disable_xcpretty: disable_xcpretty
       )
   else
     gym(
@@ -282,7 +284,8 @@ lane :build do |options|
       output_directory: output_dir,
       output_name: output_name,
       xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
-      use_legacy_build_api: use_legacy_build_api
+      use_legacy_build_api: use_legacy_build_api,
+      disable_xcpretty: disable_xcpretty
     )
   end
 
