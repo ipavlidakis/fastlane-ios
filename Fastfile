@@ -299,7 +299,7 @@ lane :post_to_slack do |options|
   destination = options[:destination]
 
   slack(
-    message: "<!here|here>: New :ios: *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
+    message: "<!here|here>: New :ios: *#{name}* *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
   )
 end
 
