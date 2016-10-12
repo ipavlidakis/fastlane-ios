@@ -10,7 +10,6 @@ before_all do
   begin
     cocoapods
     increase_build_number
-    puts("Path : #{sh("pwd")}")
   rescue => ex
     puts("#{ex}")
   end
@@ -80,6 +79,8 @@ lane :prepare do |options|
   testFlightUpload  = if options[:testflight]; options[:testflight] else false end
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
+
+  puts("Path : #{sh("pwd")}")
 
   update_bundle_id
   # update_team
