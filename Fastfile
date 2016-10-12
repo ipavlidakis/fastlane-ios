@@ -8,6 +8,8 @@ before_all do
   setup_jenkins
   
   begin
+    ENV["PROJECT_PWD"] = sh("pwd").strip!.sub('fastlane','')
+    puts("===> PROJECT_PWD: #{ENV["PROJECT_PWD"]} <===")
     cocoapods
     increase_build_number
   rescue => ex
@@ -26,12 +28,12 @@ lane :increase_build_number do
 end
 
 lane :use_distribution_provisioning_profile do
-  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
   update_provision_type(path: project_file, type: "iPhone Distribution")
 end
 
 lane :use_development_provisioning_profile do
-  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
   update_provision_type(path: project_file)
 end
 
@@ -60,10 +62,9 @@ lane :match_signing do |options|
   puts("PROFILE_UUID: #{ENV["PROFILE_UUID"]}")
   puts("MATCH_TEAM_ID: #{ENV["MATCH_TEAM_ID"]}")
 
-  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
-  path = sh("pwd").strip!
+  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
   update_project_team(
-    path: "#{path}/#{project_file}",
+    path: "#{project_file}",
     teamid: ENV["MATCH_TEAM_ID"]
   )
 
@@ -80,7 +81,6 @@ lane :prepare do |options|
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  ENV["PROJECT_PWD"] = sh("pwd").strip!.sub('fastlane','')
   puts("Project Path : #{ENV["PROJECT_PWD"]}")
 
   update_bundle_id
@@ -134,7 +134,7 @@ lane :update_property do |options|
   oldValue = ''
   
   begin
-    project_file =  Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
+    project_file =  "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
     project_file = "#{project_file}/project.pbxproj"
     oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
     oldValue = oldValue.strip!.tr(';','')
@@ -159,7 +159,7 @@ lane :update_property do |options|
 end
 
 lane :update_team do |options|
-  project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
   puts("Will update team_id: #{team_id} and path: #{project_file}")
@@ -171,7 +171,7 @@ lane :update_team do |options|
 end
 
 lane :update_bundle_id do |options|
-  project_file = Dir["*.xcodeproj"].first || "../#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
   plist_file = "#{ENV['PROJECT_NAME']}/Info.plist"
   bundle_id = ENV["APP_IDENTIFIER"]
 
@@ -250,7 +250,7 @@ lane :build do |options|
   configuration       = options[:configuration]
   clean               = if ENV['BUILD_CLEAN_PROJECT']; ENV['BUILD_CLEAN_PROJECT'] else true end
   inlude_bitcode      = if ENV['BUILD_INCLUDE_BITCODE']; ENV['BUILD_INCLUDE_BITCODE'] else true end
-  workspace           = if ENV['BUILD_WORKSPACE']; ENV['BUILD_WORKSPACE'] else "#{name}.xcworkspace" end
+  workspace           = if ENV['BUILD_WORKSPACE']; ENV['BUILD_WORKSPACE'] else "#{ENV["PROJECT_PWD"]}#{name}.xcworkspace" end
   output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
   output_dir          = "#{output_dir}#{name}/#{scheme}/".delete(' ')
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{name}.ipa" end
@@ -302,8 +302,8 @@ desc "On success build upload sends a slack message"
 lane :post_to_slack do |options|
   scheme      = options[:scheme]
   name        = options[:name]
-  version     = get_version_number(xcodeproj: "#{name}.xcodeproj")
-  build       = get_build_number(xcodeproj: "#{name}.xcodeproj")
+  version     = get_version_number(xcodeproj: "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj")
+  build       = get_build_number(xcodeproj: "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj")
   environment = scheme.upcase
   destination = options[:destination]
 
