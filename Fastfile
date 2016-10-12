@@ -62,7 +62,7 @@ lane :match_signing do |options|
 
   project_file = Dir["*.xcodeproj"].first || "#{ENV['PROJECT_NAME']}.xcodeproj"
   sh("pwd")
-  update_team_xcode_8(
+  update_project_team(
     path: project_file,
     teamid: ENV["MATCH_TEAM_ID"]
   )
