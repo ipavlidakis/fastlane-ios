@@ -67,9 +67,6 @@ lane :match_signing do |options|
     path: "#{project_file}",
     teamid: ENV["MATCH_TEAM_ID"]
   )
-
-  ENV["PROJECT_PWD"] = path
-  
 end
 
 lane :prepare do |options|
