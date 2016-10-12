@@ -80,7 +80,8 @@ lane :prepare do |options|
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
-  puts("Path : #{sh("pwd")}")
+  ENV["PROJECT_PWD"] = sh("pwd").strip!.tr('flipside','')
+  puts("Project Path : #{ENV["PROJECT_PWD"]}")
 
   update_bundle_id
   # update_team
