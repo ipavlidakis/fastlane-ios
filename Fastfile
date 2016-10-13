@@ -27,8 +27,9 @@ lane :match_signing do |options|
   configuration = options[:configuration]
   ENV['MATCH_TYPE'] = configuration
   
-  puts("Will run match now for configuration: #{configuration} and PROFILE_UUID: #{ENV["PROFILE_UUID"]}")
-  match(app_identifier: ENV["APP_IDENTIFIER"])
+  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+  puts("Will run match now for configuration: #{configuration} and team_id: #{team_id}")
+  match(app_identifier: ENV["APP_IDENTIFIER"], team_id: team_id)
 
   ENV["PROFILE_UUID_NAME"]  = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}_profile-name"]
   ENV["PROFILE_UUID"]       = ENV["sigh_#{ENV["APP_IDENTIFIER"]}_#{configuration}"]
@@ -60,9 +61,7 @@ lane :prepare do |options|
 
   update_bundle_id
 
-  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-  puts("Match team_id: #{team_id}")
-  match_signing(configuration: match, team_id: team_id)
+  match_signing(configuration: match)
   
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
