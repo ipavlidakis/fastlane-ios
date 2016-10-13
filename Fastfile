@@ -180,7 +180,7 @@ lane :update_bundle_id do |options|
     app_identifier: bundle_id
   )
 
-  update_property(key:"PRODUCT_BUNDLE_IDENTIFIER", value: bundle_id)
+  # update_property(key:"PRODUCT_BUNDLE_IDENTIFIER", value: bundle_id)
   
 end
 
