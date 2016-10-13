@@ -17,34 +17,10 @@ before_all do
   end
 end
 
-before_each do |lane, options|
-  puts "=> Lane working directory: " + Dir.pwd
-end
-
 lane :increase_build_number do
   increment_build_number({
     build_number: latest_testflight_build_number + 1
   })
-end
-
-lane :use_distribution_provisioning_profile do
-  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
-  update_provision_type(path: project_file, type: "iPhone Distribution")
-end
-
-lane :use_development_provisioning_profile do
-  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
-  update_provision_type(path: project_file)
-end
-
-lane :use_sigh_provisioning_profile do
-  update_property(key:"CODE_SIGN_IDENTITY", value: ENV["SIGH_CERTIFICATE_ID"])
-  update_property(key:"CODE_SIGN_IDENTITY[sdk=iphoneos*]", value: ENV["SIGH_CERTIFICATE_ID"])
-end
-
-lane :update_provisioning_name do
-  value = ENV["PROVISIONING_NAME"] || ENV["APP_IDENTIFIER"]
-  update_property(key:"PROVISIONING_PROFILE_SPECIFIER", value: value)
 end
 
 lane :match_signing do |options|
@@ -60,6 +36,8 @@ lane :match_signing do |options|
 
   puts("PROFILE_UUID_NAME: #{ENV["PROFILE_UUID_NAME"]}")
   puts("PROFILE_UUID: #{ENV["PROFILE_UUID"]}")
+
+
   puts("MATCH_TEAM_ID: #{ENV["MATCH_TEAM_ID"]}")
 
   project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
@@ -81,12 +59,9 @@ lane :prepare do |options|
   puts("Project Path : #{ENV["PROJECT_PWD"]}")
 
   update_bundle_id
-  # update_team
-  # use_distribution_provisioning_profile
-  # update_provisioning_name
-  # certificates(scheme: scheme, itcScheme: itcScheme)
 
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+  puts("Match team_id: #{team_id}")
   match_signing(configuration: match, team_id: team_id)
   
   if (ENV['CUSTOM_DEVELOPER_DIR'])
@@ -124,38 +99,6 @@ end
 
 # [TO BE OVERRIDEN - END]
 
-lane :update_property do |options|
-  key = options[:key] #PRODUCT_BUNDLE_IDENTIFIER
-  value = options[:value]
-
-  puts(sh("pwd"))
-  oldValue = ''
-  
-  begin
-    project_file =  "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
-    project_file = "#{project_file}/project.pbxproj"
-    oldValue = sh("awk -F '=' '/#{key}/ {print $2; exit}' #{project_file}")
-    oldValue = oldValue.strip!.tr(';','')
-  rescue => ex
-    puts("Exception: #{ex}")
-    oldValue = ''
-  end
-  
-  if (oldValue != '') 
-    command = "sed -i '' 's/"
-    command << oldValue
-    command << "/"
-    command << "\"#{value}\";"
-    command << '\\n'
-    command << "/g' #{project_file}"
-
-    puts("Will execute: #{command}")
-    sh(command)
-  else
-    puts("Will not execute: #{command}")
-  end
-end
-
 lane :update_team do |options|
   project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
@@ -179,65 +122,6 @@ lane :update_bundle_id do |options|
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
     app_identifier: bundle_id
   )
-
-  # update_property(key:"PRODUCT_BUNDLE_IDENTIFIER", value: bundle_id)
-  
-end
-
-desc "Fetches the provisioning profiles so you can build locally and deploy to your device"
-lane :certificates do |options|
-  scheme                        = options[:scheme]
-  itcScheme                     = if options[:itcScheme]; options[:itcScheme] else scheme end
-  skip_certificate_verification = if options[:skip_certificate_verification]; options[:skip_certificate_verification] else true end
-  team_id                       = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
-
-  puts("Working scheme: #{scheme} and ITCScheme: #{itcScheme} and team_id: #{team_id}")   
-  import_certificates(scheme: itcScheme)
-  ENV["PROFILE_UUID"] = sigh(skip_certificate_verification: skip_certificate_verification, team_id: team_id)
-  puts("Selected UUID: #{ENV["PROFILE_UUID"]}")
-end
-
-desc "Installs bundle certificates"
-lane :import_certificates do |options|
-  scheme    = options[:scheme]
-  name      = "#{ENV["KEYCHAIN_NAME"]}.keychain"
-  password  = ENV["KEYCHAIN_PASSWORD"]
-  path      = "#{ENV['CERTIFICATES_PATH']}/#{ENV["APP_IDENTIFIER"]}/#{scheme}"
-  keypath   = "#{path}/key.p12"
-  certpath  = "#{path}/certificate.cer"
-  
-  puts("Name #{name} and password #{password}")
-  puts("Listing available keychains")
-  sh("security list-keychains")
-  
-  begin
-    puts("1st try: Looking for #{name} keychain file")
-    unlock_keychain(path: "#{name}", password: "#{password}")
-  rescue => ex
-    begin
-      name = "#{name}-db"
-      puts("2nd try: Looking for #{name} keychain file")
-      unlock_keychain(path: "#{name}", password: "#{password}")
-    rescue => exception
-      puts("Keychain doesn't exitst. Let's create it. #{exception}")
-      name = "#{ENV["KEYCHAIN_NAME"]}.keychain"
-      create_keychain(name: "#{name}",default_keychain: false, unlock: true, timeout: 3600,lock_when_sleeps: true, password: "#{password}",)
-    end
-  end
-
-  begin
-    puts("Signing certificate file path: #{certpath}")
-    import_certificate(certificate_path: "#{certpath}",keychain_name: "#{name}")
-  rescue => ex
-    puts("Exception in lane certificates:certificate #{ex}")
-  end
- 
-  begin
-    puts("Private key file path: #{keypath}")
-    import_certificate(certificate_path: "#{keypath}",certificate_password: ENV["KEY_EXPORT_PASSWORD"],keychain_name: "#{name}")
-  rescue => ex
-    puts("Exception in lane certificates:private_key #{ex}")
-  end
 end
 
 desc "Builds the project"
