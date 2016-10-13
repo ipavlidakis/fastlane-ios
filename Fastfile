@@ -1,7 +1,6 @@
 default_platform :ios
 
 before_all do
-  update_fastlane
   if (ENV['VERIFY_CLEAN_REPO'] == '1' || ENV['VERIFY_CLEAN_REPO'].downcase == 'true')
     ensure_git_status_clean
   end
