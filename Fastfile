@@ -10,6 +10,7 @@ before_all do
   begin
     ENV["PROJECT_PWD"] = sh("pwd").strip!.sub('fastlane','')
     puts("===> PROJECT_PWD: #{ENV["PROJECT_PWD"]} <===")
+    update_fastlane
     cocoapods
     increase_build_number
   rescue => ex
