@@ -1,6 +1,7 @@
 default_platform :ios
 
 before_all do
+  update_fastlane
   if (ENV['VERIFY_CLEAN_REPO'] == '1' || ENV['VERIFY_CLEAN_REPO'].downcase == 'true')
     ensure_git_status_clean
   end
@@ -10,7 +11,6 @@ before_all do
   begin
     ENV["PROJECT_PWD"] = sh("pwd").strip!.sub('fastlane','')
     puts("===> PROJECT_PWD: #{ENV["PROJECT_PWD"]} <===")
-    update_fastlane
     cocoapods
     increase_build_number
   rescue => ex
