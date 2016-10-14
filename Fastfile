@@ -264,11 +264,13 @@ lane :itc do |options|
   output_file_name                  = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}" end
 
   apple_id = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
+  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
   puts("TestFlight IPA path: #{output_file_name}")
   pilot(
     ipa: output_file_name, 
     skip_waiting_for_build_processing: skip_waiting_for_build_processing,
-    username: apple_id
+    username: apple_id,
+    team_id: team_id
     )
   if ENV['ENABLED_NOTIFICATIONS']
     post_to_slack(scheme: scheme, destination: "TestFlight", name: project_name)
