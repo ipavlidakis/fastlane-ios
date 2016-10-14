@@ -199,7 +199,8 @@ lane :copy_artifacts_to_jenkins_workspace do
 
   if destination_dir
     begin
-      sh("cp #{source_dir}* \"#{destination_dir}\"/")
+      sh("cp #{source_dir}*.ipa \"#{destination_dir}\"/")
+      sh("cp #{source_dir}*.dSYM.zip \"#{destination_dir}\"/")
     rescue => ex
       puts("copy_artifacts_to_jenkins_workspace lane errored: #{ex}")
     end
