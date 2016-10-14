@@ -264,7 +264,7 @@ lane :itc do |options|
   output_file_name                  = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}" end
 
   apple_id = CredentialsManager::AppfileConfig.try_fetch_value(:apple_id)
-  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
+  team_id = CredentialsManager::AppfileConfig.try_fetch_value(:itc_team_id)
   puts("TestFlight IPA path: #{output_file_name}")
   pilot(
     ipa: output_file_name, 
