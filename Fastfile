@@ -166,9 +166,9 @@ lane :build do |options|
       configuration: configuration,
       clean: clean,
       include_bitcode: inlude_bitcode,
-      workspace: workspace,
-      output_directory: output_dir,
-      output_name: output_name,
+      workspace: "#{workspace}",
+      output_directory: "#{output_dir}",
+      output_name: "#{output_name}",
       xcargs: "ARCHIVE=YES", # Used to tell the Fabric run script to upload dSYM file
       use_legacy_build_api: use_legacy_build_api,
       disable_xcpretty: disable_xcpretty
