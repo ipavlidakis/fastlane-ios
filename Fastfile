@@ -42,11 +42,8 @@ lane :match_signing do |options|
 
   puts("MATCH_TEAM_ID: #{ENV["MATCH_TEAM_ID"]}")
 
-  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
-  update_project_team(
-    path: "#{project_file}",
-    teamid: ENV["MATCH_TEAM_ID"]
-  )
+  # project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
+  update_team
 end
 
 lane :prepare do |options|
@@ -100,7 +97,7 @@ end
 # [TO BE OVERRIDEN - END]
 
 lane :update_team do |options|
-  project_file = "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj"
+  project_file = "#{ENV["PROJECT_PWD"]}#{Shellwords.escape(ENV['PROJECT_NAME'])}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
   puts("Will update team_id: #{team_id} and path: #{project_file}")
