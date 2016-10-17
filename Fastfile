@@ -9,6 +9,7 @@ before_all do
   
   begin
     ENV["PROJECT_PWD"] = sh("pwd").strip!.sub('fastlane','')
+    ENV["PROJECT_PWD"] = Shellwords.escape(ENV["PROJECT_PWD"])
     puts("===> PROJECT_PWD: #{ENV["PROJECT_PWD"]} <===")
     cocoapods
     increase_build_number
