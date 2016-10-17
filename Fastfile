@@ -182,8 +182,8 @@ desc "On success build upload sends a slack message"
 lane :post_to_slack do |options|
   scheme      = options[:scheme]
   name        = options[:name]
-  version     = get_version_number(xcodeproj: "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj")
-  build       = get_build_number(xcodeproj: "#{ENV["PROJECT_PWD"]}#{ENV['PROJECT_NAME']}.xcodeproj")
+  version     = get_version_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
+  build       = get_build_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
   environment = scheme.upcase
   destination = options[:destination]
 
