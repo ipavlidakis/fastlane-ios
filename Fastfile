@@ -130,9 +130,9 @@ lane :build do |options|
   configuration       = options[:configuration]
   clean               = if ENV['BUILD_CLEAN_PROJECT']; ENV['BUILD_CLEAN_PROJECT'] else true end
   inlude_bitcode      = if ENV['BUILD_INCLUDE_BITCODE']; ENV['BUILD_INCLUDE_BITCODE'] else true end
-  workspace           = if ENV['BUILD_WORKSPACE']; ENV['BUILD_WORKSPACE'] else "#{ENV["PROJECT_PWD"]}#{name}.xcworkspace" end
+  workspace           = if ENV['BUILD_WORKSPACE']; ENV['BUILD_WORKSPACE'] else "#{name}.xcworkspace" end
   output_dir          = if ENV['BUILD_OUTPUT_DIRECTORY']; ENV['BUILD_OUTPUT_DIRECTORY'] else '' end
-  output_dir          = "#{output_dir}#{name}/#{scheme}/".delete(' ')
+  output_dir          = Shellwords.escape("#{output_dir}#{name}/#{scheme}/")
   output_name         = if ENV['BUILD_OUTPUT_NAME']; ENV['BUILD_OUTPUT_NAME'] else "#{name}.ipa" end
   use_legacy_build_api= if ENV['BUILD_USE_LEGACY_API']; ENV['BUILD_USE_LEGACY_API'] else false end
   toolchain           = if ENV['BUILD_TOOLCHAIN']; ENV['BUILD_TOOLCHAIN'] else false end
