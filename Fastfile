@@ -116,7 +116,7 @@ lane :update_bundle_id do |options|
   project_file = "#{ENV["PROJECT_PWD"]}#{project_name}.xcodeproj"
   plist_file = if ENV['INFO_PLIST_PATH']; "#{ENV['INFO_PLIST_PATH']}/Info.plist" else "Info.plist" end
   # plist_file = "#{ENV["PROJECT_PWD"]}#{project_name}/#{Shellwords.escape(plist_file)}"
-  plist_file = "#{ENV['PROJECT_NAME']}/#{plist_file}"
+  plist_file = "project_file}/#{plist_file}"
 
 
   bundle_id = ENV["APP_IDENTIFIER"]
