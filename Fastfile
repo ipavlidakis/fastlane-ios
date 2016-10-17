@@ -97,7 +97,7 @@ end
 # [TO BE OVERRIDEN - END]
 
 lane :update_team do |options|
-  project_file = "#{Shellwords.escape(ENV['PROJECT_NAME'])}.xcodeproj"
+  project_file = "#{ENV['PROJECT_NAME']}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
   puts("Will update team_id: #{team_id} and path: #{project_file}")
@@ -109,12 +109,8 @@ lane :update_team do |options|
 end
 
 lane :update_bundle_id do |options|
-  project_name = Shellwords.escape(ENV['PROJECT_NAME'])
-  project_file = "#{ENV["PROJECT_PWD"]}#{project_name}.xcodeproj"
   plist_file = if ENV['INFO_PLIST_PATH']; "#{ENV['INFO_PLIST_PATH']}/Info.plist" else "Info.plist" end
-  # plist_file = "#{ENV["PROJECT_PWD"]}#{project_name}/#{Shellwords.escape(plist_file)}"
   plist_file = "#{ENV["PROJECT_NAME"]}/#{plist_file}"
-
 
   bundle_id = ENV["APP_IDENTIFIER"]
 
