@@ -97,7 +97,7 @@ end
 # [TO BE OVERRIDEN - END]
 
 lane :update_team do |options|
-  project_file = "#{ENV["PROJECT_PWD"]}#{Shellwords.escape(ENV['PROJECT_NAME'])}.xcodeproj"
+  project_file = "#{Shellwords.escape(ENV['PROJECT_NAME'])}.xcodeproj"
   team_id = CredentialsManager::AppfileConfig.try_fetch_value(:team_id)
 
   puts("Will update team_id: #{team_id} and path: #{project_file}")
