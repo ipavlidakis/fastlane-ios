@@ -180,16 +180,22 @@ end
 
 desc "On success build upload sends a slack message"
 lane :post_to_slack do |options|
-  scheme      = options[:scheme]
-  name        = options[:name]
-  version     = get_version_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
-  build       = get_build_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
-  environment = scheme.upcase
-  destination = options[:destination]
+  begin
+    scheme      = options[:scheme]
+    name        = options[:name]
+    version     = get_version_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
+    build       = get_build_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
+    environment = scheme.upcase
+    destination = options[:destination]
 
-  slack(
-    message: "<!here|here>: New :ios: *#{name}* *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
-  )
+    slack(
+      message: "<!here|here>: New :ios: *#{name}* *#{version}* (#{build}) running '#{environment}' has been submitted to *#{destination}*  :rocket:",
+    )
+  rescue => ex
+    slack(
+      message: "<!here|here>: New :ios: *#{name}* running '#{environment}' has been submitted to *#{destination}*  :rocket:",
+    )
+  end
 end
 
 lane :copy_artifacts_to_jenkins_workspace do
