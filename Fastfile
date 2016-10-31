@@ -11,8 +11,6 @@ before_all do
     ENV["PROJECT_PWD"] = sh("pwd").strip!.sub('fastlane','')
     ENV["PROJECT_PWD"] = Shellwords.escape(ENV["PROJECT_PWD"])
     puts("===> PROJECT_PWD: #{ENV["PROJECT_PWD"]} <===")
-    cocoapods
-    increase_build_number
   rescue => ex
     puts("#{ex}")
   end
@@ -54,6 +52,9 @@ lane :prepare do |options|
   testFlightUpload  = if options[:testflight]; options[:testflight] else false end
   fabricUpload      = if options[:fabric]; options[:fabric] else false end 
   configuration     = if options[:configuration]; options[:configuration] else scheme end
+
+  cocoapods
+  increase_build_number
 
   puts("Project Path : #{ENV["PROJECT_PWD"]}")
 
