@@ -184,8 +184,8 @@ lane :post_to_slack do |options|
   begin
     scheme      = options[:scheme]
     name        = options[:name]
-    version     = get_version_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
-    build       = get_build_number(xcodeproj: "#{ENV['PROJECT_NAME']}.xcodeproj")
+    version     = get_version_number
+    build       = get_build_number
     environment = scheme.upcase
     destination = options[:destination]
 
