@@ -61,8 +61,6 @@ lane :prepare do |options|
   increase_build_number
 
   match_signing(configuration: match)
-  
-  update_bundle_id
 
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
