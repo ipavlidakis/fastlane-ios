@@ -123,6 +123,11 @@ lane :update_bundle_id do |options|
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
     app_identifier: bundle_id
   )
+
+  update_app_identifier(
+    plist_path: plist_file, # Path to info plist file, relative to xcodeproj
+    app_identifier: bundle_id # The App Identifier
+  )
 end
 
 desc "Builds the project"
