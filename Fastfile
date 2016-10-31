@@ -122,6 +122,8 @@ lane :update_bundle_id do |options|
     app_identifier: bundle_id
   )
 
+  puts("Will update bundle_id by calling 'update_app_identifier': #{bundle_id}")
+
   update_app_identifier(
     plist_path: plist_file, # Path to info plist file, relative to xcodeproj
     app_identifier: bundle_id # The App Identifier
