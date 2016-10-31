@@ -54,11 +54,11 @@ lane :prepare do |options|
   configuration     = if options[:configuration]; options[:configuration] else scheme end
 
   cocoapods
-  increase_build_number
 
   puts("Project Path : #{ENV["PROJECT_PWD"]}")
 
   update_bundle_id
+  increase_build_number
 
   match_signing(configuration: match)
   
