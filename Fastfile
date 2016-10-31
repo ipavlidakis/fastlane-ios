@@ -62,6 +62,8 @@ lane :prepare do |options|
 
   match_signing(configuration: match)
   
+  update_bundle_id
+
   if (ENV['CUSTOM_DEVELOPER_DIR'])
     ENV['DEVELOPER_DIR'] = ENV['CUSTOM_DEVELOPER_DIR']
   end
