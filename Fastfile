@@ -255,13 +255,17 @@ lane :fabric do |options|
   output_file_name          = if ENV['IPA_OUTPUT_PATH']; ENV['IPA_OUTPUT_PATH'] else "#{output_dir}#{output_name}" end
 
   puts("Crashlytics IPA path: #{output_file_name}")
-  crashlytics(
-    crashlytics_path: crashlytics_path,
-    api_token: crashlytics_api_token,
-    build_secret: crashlytics_build_secret,
-    ipa_path: output_file_name,
-    notes: "Built with scheme: #{scheme}. Upload file name: #{output_name}",
-  )
+  begin
+    crashlytics(
+      crashlytics_path: crashlytics_path,
+      api_token: crashlytics_api_token,
+      build_secret: crashlytics_build_secret,
+      ipa_path: output_file_name,
+      notes: "Built with scheme: #{scheme}. Upload file name: #{output_name}",
+    )
+  rescue => ex
+    puts("Crashlytics lane errored: #{ex}")
+  end
 
   if ENV['ENABLED_NOTIFICATIONS']
     post_to_slack(scheme: scheme, destination: "Crashlytics", name: project_name)
