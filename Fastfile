@@ -23,10 +23,15 @@ lane :increase_build_number do
       build_number: latest_testflight_build_number + 1
     })
   rescue => ex
-    bnumber     = get_build_number
-    increment_build_number({
-      build_number: bnumber + 1
-    })
+    puts("#{ex}")
+    begin
+      bnumber     = get_build_number
+      increment_build_number({
+        build_number: bnumber + 1
+      })
+    rescue => ex
+      puts("#{ex}")
+    end
   end
 end
 
