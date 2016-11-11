@@ -17,9 +17,17 @@ before_all do
 end
 
 lane :increase_build_number do
-  increment_build_number({
-    build_number: latest_testflight_build_number + 1
-  })
+
+  begin
+    increment_build_number({
+      build_number: latest_testflight_build_number + 1
+    })
+  rescue => ex
+    version     = get_version_number
+    increment_build_number({
+      build_number: version + 1
+    })
+  end
 end
 
 lane :match_signing do |options|
