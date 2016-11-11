@@ -23,9 +23,9 @@ lane :increase_build_number do
       build_number: latest_testflight_build_number + 1
     })
   rescue => ex
-    version     = get_version_number
+    bnumber     = get_build_number
     increment_build_number({
-      build_number: version + 1
+      build_number: bnumber + 1
     })
   end
 end
